@@ -5,6 +5,7 @@ from cell_formatter import red_out_failed_subject, red_out_insufficient_credit
 from globals import column_len_array
 from db import get_programs_analysis_collection_mock
 from bson import ObjectId  # Import ObjectId from pymongo or bson
+import datetime
 
 import gc
 import sys
@@ -601,4 +602,6 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
 def custom_json_serializer(obj):
     if isinstance(obj, ObjectId):
         return str(obj)  # Convert ObjectId to string
+    elif isinstance(obj, datetime.datetime):
+        return obj.isoformat()  # Convert datetime to ISO 8601 string
     raise TypeError(f"Type {type(obj)} not serializable")
