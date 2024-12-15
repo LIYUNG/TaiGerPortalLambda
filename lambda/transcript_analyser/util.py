@@ -4,6 +4,7 @@ from CourseSuggestionAlgorithms import *
 from cell_formatter import red_out_failed_subject, red_out_insufficient_credit
 from globals import column_len_array
 from db import get_programs_analysis_collection_mock
+from bson import ObjectId  # Import ObjectId from pymongo or bson
 
 import gc
 import sys
@@ -595,3 +596,9 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
 
     WriteToExcel(writer, program_name, program_categories, baseCategoryToProgramMapping,
                  transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array)
+
+
+def custom_json_serializer(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)  # Convert ObjectId to string
+    raise TypeError(f"Type {type(obj)} not serializable")
