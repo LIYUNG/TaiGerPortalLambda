@@ -438,6 +438,8 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
 
     sorted_courses = df_category_data
 
+    json_output = {}
+
     with io.BytesIO() as output:
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             start_row = 0
@@ -445,9 +447,17 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                 if sortedcourses.empty:
                     print(f"Skipping empty DataFrame at index {idx}")
                     continue  # Skip to the next DataFrame if empty
+                
+                # Write to Excel
                 sortedcourses.to_excel(
                     writer, sheet_name='General', startrow=start_row, index=False)
                 start_row += len(sortedcourses.index) + 2
+
+                # Write to JSON
+                json_output[f'sheet_{idx}'] = json.loads(
+                    sortedcourses.to_json(orient='records', indent=4)
+                )
+
             workbook = writer.book
             worksheet = writer.sheets['General']
 
@@ -481,15 +491,27 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                     writer, program)
 
         data = output.getvalue()
+    
+    # Save JSON data
+    json_output['programs'] = programs
+
+    # Write JSON to a file or return
+    with open('output.json', 'w') as json_file:
+        json.dump(json_output, json_file, indent=4)
 
     AWS_S3_BUCKET_NAME = os.environ.get("AWS_S3_BUCKET_NAME")
     print(AWS_S3_BUCKET_NAME)
     try:
         s3 = boto3.resource('s3')
         transcript_path = studentId + '/analysed_transcript_' + student_name + '.xlsx'
+        transcript_json_path = studentId + '/analysed_transcript_' + student_name + '.json'
         print(transcript_path)
         s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
             Key=transcript_path, Body=data)
+    
+        s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
+            Key=transcript_json_path, Body=data)
+
         return {
             'statusCode': 200,
             'body': json.dumps({'data': transcript_path})
