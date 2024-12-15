@@ -497,7 +497,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
     json_output['programs'] = programs
 
     json_buffer = io.BytesIO()
-    json_buffer.write(json.dumps(json_output).encode('utf-8'))
+    json_data = json.dumps(json_output, default=custom_json_serializer).encode('utf-8')
     json_buffer.seek(0)
     json_data = json_buffer.getvalue()
 
