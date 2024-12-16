@@ -214,7 +214,7 @@ def convert_courses(course_dict, lang):
     # Loop through each course in the dictionary
     for course_name, course_details in course_dict.items():
         # Extract the relevant details
-        # categoryName = course_details.get('categoryName', '')
+        categoryName = course_details.get('categoryName', '')
         keywords = course_details.get('keywords', {}).get(lang, [])
         anti_keywords = course_details.get('antiKeywords', {}).get(lang, [])
 
@@ -222,6 +222,6 @@ def convert_courses(course_dict, lang):
         additional_list = ['一', '二']
 
         # Store the course data in the desired format
-        result[course_name] = [keywords, anti_keywords, additional_list]
+        result[course_name] = [keywords, anti_keywords, additional_list, categoryName]
 
     return result
