@@ -17,7 +17,7 @@ import boto3
 KEY_WORDS = 0
 ANTI_KEY_WORDS = 1
 DIFFERENTIATE_KEY_WORDS = 2
-CATEGORY_NAME = 2
+CATEGORY_NAME = 3
 
 # naming convention
 
