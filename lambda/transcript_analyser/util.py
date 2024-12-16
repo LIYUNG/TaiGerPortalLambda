@@ -17,7 +17,7 @@ import boto3
 KEY_WORDS = 0
 ANTI_KEY_WORDS = 1
 DIFFERENTIATE_KEY_WORDS = 2
-CATEGORY_NAME = 3
+CATEGORY_NAME = 2
 
 # naming convention
 
@@ -241,16 +241,12 @@ def CourseSorting(df_transcript, df_category_data, transcript_sorted_group_map, 
             if (idx2 == len(transcript_sorted_group_map) - 1):
                 temp_string = df_transcript['grades'][idx]
                 temp0 = 0
-                if temp_string is None:
-                    temp0 = {categoryName: subj, 'credits': df_transcript['credits'][idx],
-                             'grades': df_transcript['grades'][idx]}
+                if isfloat(temp_string):
+                    temp0 = {cat: subj, 'credits': df_transcript['credits'][idx],
+                             'grades': float(df_transcript['grades'][idx])}
                 else:
-                    if isfloat(temp_string):
-                        temp0 = {categoryName: subj, 'credits': df_transcript['credits'][idx],
-                                 'grades': float(df_transcript['grades'][idx])}
-                    else:
-                        temp0 = {categoryName: subj, 'credits': df_transcript['credits'][idx],
-                                 'grades': df_transcript['grades'][idx]}
+                    temp0 = {cat: subj, 'credits': df_transcript['credits'][idx],
+                             'grades': df_transcript['grades'][idx]}
 
                 df_temp0 = pd.DataFrame(data=temp0, index=[0])
                 if not df_temp0.empty:
@@ -263,7 +259,7 @@ def CourseSorting(df_transcript, df_category_data, transcript_sorted_group_map, 
                 temp_string = df_transcript['grades'][idx]
                 temp = 0
                 if temp_string is None:
-                    temp = {categoryName: subj, 'credits': float(df_transcript['credits'][idx]),
+                    temp = {cat: subj, 'credits': float(df_transcript['credits'][idx]),
                             'grades': df_transcript['grades'][idx]}
                 else:
                     # failed subject not count
@@ -271,10 +267,10 @@ def CourseSorting(df_transcript, df_category_data, transcript_sorted_group_map, 
                             or "Fail" in str(temp_string) or "W" in str(temp_string) or "F" in str(temp_string) or "fail" in str(temp_string) or "退選" in str(temp_string) or "withdraw" in str(temp_string)):
                         continue
                     if isfloat(temp_string):
-                        temp = {categoryName: subj, 'credits': float(df_transcript['credits'][idx]),
+                        temp = {cat: subj, 'credits': float(df_transcript['credits'][idx]),
                                 'grades': float(df_transcript['grades'][idx])}
                     else:
-                        temp = {categoryName: subj, 'credits': float(df_transcript['credits'][idx]),
+                        temp = {cat: subj, 'credits': float(df_transcript['credits'][idx]),
                                 'grades': df_transcript['grades'][idx]}
                 df_temp = pd.DataFrame(data=temp, index=[0])
                 if not df_temp.empty:
@@ -410,7 +406,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
     df_category_courses_sugesstion_data = []
     for idx, cat in enumerate(transcript_sorted_group_map):
         categoryName = transcript_sorted_group_map[cat][CATEGORY_NAME]
-        category_data = {categoryName: [], 'credits': [], 'grades': []}
+        category_data = {cat: [], 'courses': [], 'credits': [], 'grades': []}
         df_category_data.append(pd.DataFrame(data=category_data))
         df_category_courses_sugesstion_data.append(
             pd.DataFrame(data=category_courses_sugesstion_data, columns=['建議修課']))
@@ -419,14 +415,14 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
         # 基本分類課程 (與申請學程無關)
         df_category_data = CourseSorting(
             df_transcript, df_category_data, transcript_sorted_group_map, "course_english")
-        # 基本分類課程資料庫
+        # 基本分類電機課程資料庫
         df_category_courses_sugesstion_data = DatabaseCourseSorting(
             df_database, df_category_courses_sugesstion_data, transcript_sorted_group_map, "all_course_english")
     else:
         # 基本分類課程 (與申請學程無關)
         df_category_data = CourseSorting(
             df_transcript, df_category_data, transcript_sorted_group_map, "course_chinese")
-        # 基本分類課程資料庫
+        # 基本分類電機課程資料庫
         df_category_courses_sugesstion_data = DatabaseCourseSorting(
             df_database, df_category_courses_sugesstion_data, transcript_sorted_group_map, "all_course_chinese")
 
