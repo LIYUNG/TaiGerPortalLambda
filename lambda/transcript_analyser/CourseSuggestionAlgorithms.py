@@ -22,7 +22,7 @@ def SuggestionCourseAlgorithm(df_category_data, transcript_sorted_group_map, df_
     for idx, cat in enumerate(df_category_data):
         temp_array = cat[cat.columns[0]].tolist()
         # if 3, check 一 or 二, otherwise, not to screen  一 and 二
-        if len(transcript_sorted_group_map[cat.columns[0]]) == 3:
+        if len(transcript_sorted_group_map[cat.columns[0]]) == 4:
             for course_name in temp_array:
                 # Find_the the keywords idx in keywords array
                 keyword = '-'
