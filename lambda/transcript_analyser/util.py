@@ -17,7 +17,7 @@ import boto3
 KEY_WORDS = 0
 ANTI_KEY_WORDS = 1
 DIFFERENTIATE_KEY_WORDS = 2
-CATEGORY_NAME = 2
+CATEGORY_NAME = 3
 
 # naming convention
 
@@ -208,7 +208,10 @@ def CoursesToProgramCategoryMappingNew(df_PROG_SPEC_CATES, program_category, bas
             # Continue with your logic if the category is found
             # (append courses, etc.)
             trans_cat.rename(
-                columns={transcript_sorted_group_list[idx]: categ['program_category']}, inplace=True)
+                columns={'courses': categ['program_category']}, inplace=True)
+            # remove column of ObjectId
+            trans_cat.drop(
+                columns=[transcript_sorted_group_list[idx]], inplace=True)
             # find the idx corresponding to program's category
             idx_temp = -1
             for idx2, cat in enumerate(df_PROG_SPEC_CATES):
@@ -242,10 +245,10 @@ def CourseSorting(df_transcript, df_category_data, transcript_sorted_group_map, 
                 temp_string = df_transcript['grades'][idx]
                 temp0 = 0
                 if isfloat(temp_string):
-                    temp0 = {cat: subj, 'credits': df_transcript['credits'][idx],
+                    temp0 = {cat: categoryName, 'courses': subj, 'credits': df_transcript['credits'][idx],
                              'grades': float(df_transcript['grades'][idx])}
                 else:
-                    temp0 = {cat: subj, 'credits': df_transcript['credits'][idx],
+                    temp0 = {cat: categoryName, 'courses': subj, 'credits': df_transcript['credits'][idx],
                              'grades': df_transcript['grades'][idx]}
 
                 df_temp0 = pd.DataFrame(data=temp0, index=[0])
@@ -259,7 +262,7 @@ def CourseSorting(df_transcript, df_category_data, transcript_sorted_group_map, 
                 temp_string = df_transcript['grades'][idx]
                 temp = 0
                 if temp_string is None:
-                    temp = {cat: subj, 'credits': float(df_transcript['credits'][idx]),
+                    temp = {cat: categoryName, 'courses': subj, 'credits': float(df_transcript['credits'][idx]),
                             'grades': df_transcript['grades'][idx]}
                 else:
                     # failed subject not count
@@ -267,10 +270,10 @@ def CourseSorting(df_transcript, df_category_data, transcript_sorted_group_map, 
                             or "Fail" in str(temp_string) or "W" in str(temp_string) or "F" in str(temp_string) or "fail" in str(temp_string) or "退選" in str(temp_string) or "withdraw" in str(temp_string)):
                         continue
                     if isfloat(temp_string):
-                        temp = {cat: subj, 'credits': float(df_transcript['credits'][idx]),
+                        temp = {cat: categoryName, 'courses': subj, 'credits': float(df_transcript['credits'][idx]),
                                 'grades': float(df_transcript['grades'][idx])}
                     else:
-                        temp = {cat: subj, 'credits': float(df_transcript['credits'][idx]),
+                        temp = {cat: categoryName, 'courses': subj, 'credits': float(df_transcript['credits'][idx]),
                                 'grades': df_transcript['grades'][idx]}
                 df_temp = pd.DataFrame(data=temp, index=[0])
                 if not df_temp.empty:
