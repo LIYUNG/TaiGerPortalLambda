@@ -503,7 +503,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
 
     json_buffer = io.BytesIO()
     json_data = json.dumps(
-        json_output, default=custom_json_serializer).encode('utf-8')
+        json_output, ensure_ascii=False, default=custom_json_serializer).encode('utf-8')
     json_buffer.write(json_data)
     json_buffer.seek(0)
 
