@@ -209,9 +209,11 @@ def CoursesToProgramCategoryMappingNew(df_PROG_SPEC_CATES, program_category, bas
             # (append courses, etc.)
             trans_cat.rename(
                 columns={'courses': categ['program_category']}, inplace=True)
+
             # remove column of ObjectId
-            trans_cat.drop(
-                columns=[transcript_sorted_group_list[idx]], inplace=True)
+            if transcript_sorted_group_list[idx] in trans_cat.columns:
+                trans_cat.drop(
+                    columns=[transcript_sorted_group_list[idx]], inplace=True)
             # find the idx corresponding to program's category
             idx_temp = -1
             for idx2, cat in enumerate(df_PROG_SPEC_CATES):
