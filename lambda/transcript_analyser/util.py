@@ -455,7 +455,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
 
     sorted_courses = df_category_data
 
-    json_output = {'General': {}}
+    json_output = {'General': {}, 'timestamp': datetime.utcnow().isoformat()}
 
     with io.BytesIO() as output:
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
@@ -512,6 +512,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
 
     # Save JSON data
     print('json_output: ', json_output)
+
     json_buffer = io.BytesIO()
     json_data = json.dumps(
         json_output, ensure_ascii=False, default=custom_json_serializer).encode('utf-8')
