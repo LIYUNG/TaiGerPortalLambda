@@ -408,7 +408,7 @@ def WriteToJson(json_output, program_name, program_category, baseCategoryToProgr
             sortedcourses.to_json(orient='records', indent=4)
         )
         json_output[program_name]['suggestion'] = json.loads(
-            df_PROG_SPEC_CATES_COURSES_SUGGESTION.to_json(
+            df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_json(
                 orient='records', indent=4)
         )
 
@@ -492,7 +492,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                 if sortedcourses.empty:
                     print(f"Skipping empty DataFrame at index {idx}")
                     continue  # Skip to the next DataFrame if empty
-                
+
                 # Write to Excel
                 sortedcourses.to_excel(
                     writer, sheet_name='General', startrow=start_row, index=False)
@@ -544,7 +544,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                     json_output, program)
 
         data = output.getvalue()
-    
+
     # Save JSON data
     print('json_output: ', json_output)
     json_buffer = io.BytesIO()
@@ -562,7 +562,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
         print(transcript_path)
         s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
             Key=transcript_path, Body=data)
-    
+
         s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
             Key=transcript_json_path, Body=json_buffer)
 
@@ -698,7 +698,7 @@ def createJson(transcript_sorted_group_map, df_transcript_array, df_category_cou
     #####################################################################
 
     WriteToJson(json_output, program_name, program_categories, baseCategoryToProgramMapping,
-                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array)
+                transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array)
 
 
 def custom_json_serializer(obj):
