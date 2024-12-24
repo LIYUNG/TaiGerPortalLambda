@@ -463,7 +463,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
             start_row = 0
             for idx, sortedcourses in enumerate(sorted_courses):
                 if sortedcourses.empty:
-                    print(f"Skipping empty DataFrame at index {idx}")
+                    # print(f"Skipping empty DataFrame at index {idx}")
                     continue  # Skip to the next DataFrame if empty
 
                 # Write to Excel
@@ -557,7 +557,7 @@ def convertingKeywordsSetArrayToObject(program_categories):
         # Iterate over each keyword in the keywordSets
         for keyword in program['keywordSets']:
             # Add the keyword to the dictionary with its corresponding program category and ECTS
-            print('keyword: ', keyword)
+            # print('keyword: ', keyword)
             #  TODO: check if keyword is id or ObjectId
             baseCategoryToProgramMapping[keyword] = {
                 'program_category': category,
