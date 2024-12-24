@@ -330,7 +330,7 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
 # TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
 
-def WriteToExcel(writer, json_output, program_name, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array):
+def WriteToExcel(writer, json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -356,7 +356,7 @@ def WriteToExcel(writer, json_output, program_name, program_category, baseCatego
     # Write to Excel
     start_row = 0
     # Write to Json
-    json_output[program_name] = {'sorted': {}, 'suggestion': {}}
+    json_output[program_name_long] = {'sorted': {}, 'suggestion': {}}
 
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
         sortedcourses.to_excel(
@@ -366,10 +366,10 @@ def WriteToExcel(writer, json_output, program_name, program_category, baseCatego
         start_row += max(len(sortedcourses.index),
                          len(df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].index)) + 2
 
-        json_output[program_name]['sorted'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
+        json_output[program_name_long]['sorted'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
             sortedcourses.to_json(orient='records', indent=4)
         )
-        json_output[program_name]['suggestion'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
+        json_output[program_name_long]['suggestion'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_json(
                 orient='records', indent=4)
         )
@@ -614,7 +614,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     ####################### End #########################################
     #####################################################################
 
-    WriteToExcel(writer, json_output, program_name, program_categories, baseCategoryToProgramMapping,
+    WriteToExcel(writer, json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
                  transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array)
 
 
