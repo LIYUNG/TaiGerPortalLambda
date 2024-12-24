@@ -404,10 +404,10 @@ def WriteToJson(json_output, program_name, program_category, baseCategoryToProgr
     start_row = 0
     json_output[program_name] = {'sorted': {}, 'suggestion': {}}
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
-        json_output[program_name]['sorted'] = json.loads(
+        json_output[program_name]['sorted'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
             sortedcourses.to_json(orient='records', indent=4)
         )
-        json_output[program_name]['suggestion'] = json.loads(
+        json_output[program_name]['suggestion'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_json(
                 orient='records', indent=4)
         )
@@ -656,9 +656,6 @@ def createJson(transcript_sorted_group_map, df_transcript_array, df_category_cou
     program_name = ' '.join(
         [the_program['school'], the_program['program_name'], the_program['degree']])
 
-    # Limit to 30 characters as limitation of sheet name
-    if len(program_name) > 30:
-        program_name = program_name[:27] + '...'  # Add ellipsis if truncated
     print("Create sheet for", program_name)
     df_transcript_array_temp = []
     df_category_courses_sugesstion_data_temp = []
