@@ -348,10 +348,10 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
         df_PROG_SPEC_CATES, program_category)
 
     # drop the Others, 建議修課
-    # for idx, trans_cat in enumerate(df_PROG_SPEC_CATES_COURSES_SUGGESTION):
-    #     if(idx == len(df_PROG_SPEC_CATES_COURSES_SUGGESTION) - 1):
-    #         df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].drop(
-    #             columns=['Others', '建議修課'], inplace=True)
+    for idx, trans_cat in enumerate(df_PROG_SPEC_CATES_COURSES_SUGGESTION):
+        if(idx == len(df_PROG_SPEC_CATES_COURSES_SUGGESTION) - 1):
+            df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].drop(
+                columns=['Others', '建議修課'], inplace=True)
 
     # Write to Excel
     start_row = 0
