@@ -20,20 +20,20 @@ DIFFERENTIATE_KEY_WORDS = 2
 
 def SuggestionCourseAlgorithm(df_category_data, transcript_sorted_group_map, df_category_courses_sugesstion_data):
     for idx, cat in enumerate(df_category_data):
-        temp_array = cat[cat.columns[0]].tolist()
+        temp_array = cat[cat.columns[1]].tolist()
         # if 3, check 一 or 二, otherwise, not to screen  一 and 二
-        if len(transcript_sorted_group_map[cat.columns[0]]) == 4:
+        if len(transcript_sorted_group_map[cat.columns[1]]) == 4:
             for course_name in temp_array:
                 # Find_the the keywords idx in keywords array
                 keyword = '-'
-                for keywords in transcript_sorted_group_map[cat.columns[0]][KEY_WORDS]:
+                for keywords in transcript_sorted_group_map[cat.columns[1]][KEY_WORDS]:
                     # print(keywords)
                     if keywords in course_name:
                         keyword = keywords
                         break
                 # Find_the the idx in differentiation array (一 or 二) DIFFERENTIATE_KEY_WORDS
                 dif = '-'
-                for diff in transcript_sorted_group_map[cat.columns[0]][DIFFERENTIATE_KEY_WORDS]:
+                for diff in transcript_sorted_group_map[cat.columns[1]][DIFFERENTIATE_KEY_WORDS]:
                     # print(diff)
                     if diff in course_name:
                         dif = diff
