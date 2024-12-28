@@ -192,7 +192,7 @@ def CoursesToProgramCategoryMappingNew(df_PROG_SPEC_CATES, program_category, bas
 
     # ['GENERAL_PHYSICS', 'EE_ADVANCED_PHYSICS',...]
     # print(transcript_sorted_group_list)
-    # [{'program_category': 'Mathematics', 'requiredECTS': 28, 'keywordSets': ['CALCULUS', 'ME_MATH']}, {'program_category': 'Physics', 'requiredECTS': 10, 'keywordSets': ['GENERAL_PHYSICS', 'EE_ADVANCED_PHYSICS', 'PHYSICS_EXP']}, {'program_category': 'Programming and Computer science', 'requiredECTS': 12, 'keywordSets': ['EE_INTRO_COMPUTER_SCIENCE', 'PROGRAMMING_LANGUAGE', 'SOFTWARE_ENGINEERING']}, {'program_category': 'System_Theory', 'requiredECTS': 8, 'keywordSets': ['CONTROL_THEORY']}, {'program_category': 'Electronics and Circuits Module', 'requiredECTS': 34, 'keywordSets': ['ELECTRONICS', 'ELECTRONICS_EXPERIMENT', 'ELECTRO_CIRCUIT', 'SIGNAL_SYSTEM', 'ELECTRO_MAGNET']}, {'program_category': 'Theoretical_Module_EECS', 'requiredECTS': 8, 'keywordSets': ['EE_HF_RF_THEO_INFO']}, {'program_category': 'Application_Module_EECS', 'requiredECTS': 20, 'keywordSets': ['POWER_ELECTRONICS', 'COMMUNICATION_ENGINEERING', 'EE_ADVANCED_ELECTRO', 'EE_APPLICATION_ORIENTED']}, {'program_category': 'Others', 'requiredECTS': 0, 'keywordSets': []}]
+    # [{'program_category': 'Mathematics', 'requiredECTS': 28, 'keywordSets': ['CALCULUS', 'ME_MATH']}, {...}]
     # print(program_category)
     # df array, Columns: [MECHANIK, credits, grades] Index: [], Empty DataFrame,  || Columns: [建議修課] Index: [], Empty DataFrame
     # print(df_transcript_array_temp)
@@ -330,7 +330,7 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
 # TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
 
-def WriteToExcel(writer, json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array):
+def WriteToExcel(writer, json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -349,14 +349,23 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
 
     # drop the Others, 建議修課
     for idx, trans_cat in enumerate(df_PROG_SPEC_CATES_COURSES_SUGGESTION):
-        if(idx == len(df_PROG_SPEC_CATES_COURSES_SUGGESTION) - 1):
+        if (idx == len(df_PROG_SPEC_CATES_COURSES_SUGGESTION) - 1):
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].drop(
                 columns=['Others', '建議修課'], inplace=True)
 
     # Write to Excel
     start_row = 0
     # Write to Json
-    json_output[program_name_long] = {'sorted': {}, 'suggestion': {}}
+    json_output[program_name_long] = {
+        'sorted': {}, 'suggestion': {}, 'scores': {}}
+
+    gpaScore = program.get('gpaScore', 0)
+    cvScore = program.get('cvScore', 0)
+    mlScore = program.get('mlScore', 0)
+    rlScore = program.get('rlScore', 0)
+    essayScore = program.get('essayScore', 0)
+    directRejectionScore = program.get('directRejectionScore', 0)
+    directAdmissionScore = program.get('directAdmissionScore', 0)
 
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
         sortedcourses.to_excel(
@@ -373,6 +382,15 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_json(
                 orient='records', indent=4)
         )
+        json_output[program_name_long]['scores'][df_PROG_SPEC_CATES[idx].columns[0]] = {
+            'gpaScore': gpaScore,
+            'cvScore': cvScore,
+            'mlScore': mlScore,
+            'rlScore': rlScore,
+            'essayScore': essayScore,
+            'directRejectionScore': directRejectionScore,
+            'directAdmissionScore': directAdmissionScore,
+        }
 
     # Formatting
     workbook = writer.book
@@ -617,7 +635,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     #####################################################################
 
     WriteToExcel(writer, json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
-                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array)
+                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program)
 
 
 def custom_json_serializer(obj):
