@@ -37,7 +37,7 @@ def ProgramCategoryInit(program_categories):
     df_PROG_SPEC_CATES_COURSES_SUGGESTION = []
     for idx, cat in enumerate(program_categories):
         PROG_SPEC_CAT = {cat['program_category']: [],
-                         'credits': [], 'grades': [], 'requiredECTS': cat['requiredECTS']}
+                         'credits': [], 'grades': [], 'requiredECTS': cat['requiredECTS'], 'maxScore': []}
         PROG_SPEC_CATES_COURSES_SUGGESTION = {cat['program_category']: [],
                                               }
         df_PROG_SPEC_CATES.append(pd.DataFrame(data=PROG_SPEC_CAT))
@@ -319,8 +319,9 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
             data=category_credits_sum, index=[0])
         df_PROG_SPEC_CATES[idx] = pd.concat(
             [df_PROG_SPEC_CATES[idx], df_category_credits_sum])
+        maxScore = program_category[idx].get('maxScore', 0)
         category_credits_sum = {trans_cat.columns[0]: "ECTS轉換", 'credits': 1.5 *
-                                credit_sum, 'requiredECTS': program_category[idx]['requiredECTS']}
+                                credit_sum, 'requiredECTS': program_category[idx]['requiredECTS'], 'maxScore': maxScore}
         df_category_credits_sum = pd.DataFrame(
             data=category_credits_sum, index=[0])
         df_PROG_SPEC_CATES[idx] = pd.concat(
@@ -366,7 +367,15 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
     essayScore = program.get('essayScore', 0)
     directRejectionScore = program.get('directRejectionScore', 0)
     directAdmissionScore = program.get('directAdmissionScore', 0)
-
+    json_output[program_name_long]['scores'] = {
+        'gpaScore': gpaScore,
+        'cvScore': cvScore,
+        'mlScore': mlScore,
+        'rlScore': rlScore,
+        'essayScore': essayScore,
+        'directRejectionScore': directRejectionScore,
+        'directAdmissionScore': directAdmissionScore,
+    }
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
         sortedcourses.to_excel(
             writer, sheet_name=program_name, startrow=start_row, header=True, index=False)
@@ -382,15 +391,6 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_json(
                 orient='records', indent=4)
         )
-        json_output[program_name_long]['scores'][df_PROG_SPEC_CATES[idx].columns[0]] = {
-            'gpaScore': gpaScore,
-            'cvScore': cvScore,
-            'mlScore': mlScore,
-            'rlScore': rlScore,
-            'essayScore': essayScore,
-            'directRejectionScore': directRejectionScore,
-            'directAdmissionScore': directAdmissionScore,
-        }
 
     # Formatting
     workbook = writer.book
