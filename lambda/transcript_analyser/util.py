@@ -403,7 +403,7 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
             # set the column length
             worksheet.set_column(i, i, column_len_array[i] * 2)
     gc.collect()  # Forced GC
-    print("Save to " + program_name)
+    print("Save to " + program_name_long)
 
 
 def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, column_len_array, studentId, student_name, analysis_language, requirement_ids_arr=[]):
