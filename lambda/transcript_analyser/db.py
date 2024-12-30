@@ -57,7 +57,8 @@ def get_database():
         db_name = MONGODB_NAME
 
         # Create a new client and connect to the server
-        mongo_client = MongoClient(mongo_uri)
+        mongo_client = MongoClient(
+            mongo_uri, readPreference='primary', readConcernLevel='majority')
 
         # Send a ping to confirm a successful connection
         try:
