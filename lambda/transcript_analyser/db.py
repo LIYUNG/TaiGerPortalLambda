@@ -20,7 +20,7 @@ secrets_manager = boto3.client('secretsmanager')
 # https://aws.amazon.com/developer/language/python/
 
 
-def get_secret_aws_example():
+def get_aws_secret():
 
     secret_name = os.environ.get("MONGODB_URI_SECRET_NAME")
     region_name = os.environ.get("REGION")
@@ -51,7 +51,7 @@ def get_database():
     global db
 
     if db is None:
-        MONGODB_URI = get_secret_aws_example()
+        MONGODB_URI = get_aws_secret()
         MONGODB_NAME = os.environ.get("MONGODB_NAME")
         mongo_uri = MONGODB_URI
         db_name = MONGODB_NAME
@@ -86,6 +86,7 @@ def get_requirements_collection(requirement_ids_list=None):
         try:
             requirement_ids_list = [ObjectId(id)
                                     for id in requirement_ids_list]
+            print('requirement_ids_list: ', requirement_ids_list)
         except Exception as e:
             print(f"Error converting requirement_ids_list to ObjectId: {e}")
             requirement_ids_list = []
@@ -100,22 +101,19 @@ def get_requirements_collection(requirement_ids_list=None):
         {
             '$lookup': {
                 'from': 'programs',             # Collection to join with
-                # Field in 'programrequirements' that references 'programs'
                 'localField': 'programId',
                 'foreignField': '_id',          # Field in 'programs' to match with
                 'as': 'programId'               # Output array field name for joined data
             }
         },
         {
-            '$project': {
-                # Include specific fields from 'programrequirements' and 'programId'
-                **{field: 1 for field in collection.find_one({}).keys()},
+            '$addFields': {
                 'programId': {
                     '$map': {
                         'input': '$programId',
                         'as': 'program',
                         'in': {
-                            '_id': '$$program._id',  # Include the program ID
+                            '_id': '$$program._id',
                             'school': '$$program.school',
                             'program_name': '$$program.program_name',
                             'degree': '$$program.degree'
@@ -170,25 +168,7 @@ def get_keywords_collection():
     return processed_data
 
 
-def get_programs_analysis_collection():
-    # Get the database connection
-    database = get_database()
-
-    # Use the database connection to perform operations
-    collection = database['programanalyse']
-
-    # Example: Fetch all documents from the collection
-    documents = list(collection.find({}))
-
-    return documents
-
-
-def get_programs_analysis_collection_mock(requirement_ids_arr):
-    # # Get the database connection
-    # database = get_database()
-
-    # # Use the database connection to perform operations
-    # collection = database['programanalyse']
+def get_programs_analysis_collection(requirement_ids_arr):
 
     # Example: Fetch all documents from the collection
     # documents = programs_mock
@@ -223,6 +203,7 @@ def convert_courses(course_dict, lang):
         additional_list = ['一', '二']
 
         # Store the course data in the desired format
-        result[course_name] = [keywords, anti_keywords, additional_list, categoryName]
+        result[course_name] = [keywords, anti_keywords,
+                               additional_list, categoryName]
 
     return result

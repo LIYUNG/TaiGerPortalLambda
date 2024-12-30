@@ -3,7 +3,7 @@ import pandas as pd
 from CourseSuggestionAlgorithms import *
 from cell_formatter import red_out_failed_subject, red_out_insufficient_credit
 from globals import column_len_array
-from db import get_programs_analysis_collection_mock
+from db import get_programs_analysis_collection
 from bson import ObjectId  # Import ObjectId from pymongo or bson
 import datetime
 
@@ -539,7 +539,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                 # Modify to column width for "requiredECTS"
                 column_len_array.append(6)
 
-            programs = get_programs_analysis_collection_mock(
+            programs = get_programs_analysis_collection(
                 requirement_ids_arr)
             print('programs', programs)
 
