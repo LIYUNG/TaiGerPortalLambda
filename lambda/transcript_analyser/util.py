@@ -358,24 +358,48 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
     start_row = 0
     # Write to Json
     json_output[program_name_long] = {
-        'sorted': {}, 'suggestion': {}, 'scores': {}}
+        'sorted': {}, 'suggestion': {}, 'scores': {}, 'fpso': "", 'admissionDescription': ""}
 
+    fpso = program.get('fpso', "")
+    admissionDescription = program.get('admissionDescription', "")
+    gpaScoreBoundaryGPA = program.get('gpaScoreBoundaryGPA', 0)
     gpaScore = program.get('gpaScore', 0)
+    coursesScore = program.get('coursesScore', 0)
     cvScore = program.get('cvScore', 0)
     mlScore = program.get('mlScore', 0)
     rlScore = program.get('rlScore', 0)
     essayScore = program.get('essayScore', 0)
+    gmatScore = program.get('gmatScore', 0)
+    greScore = program.get('greScore', 0)
+    interviewScore = program.get('interviewScore', 0)
+    firstRoundConsidered = program.get('firstRoundConsidered', [])
+    secondRoundConsidered = program.get('secondRoundConsidered', [])
     directRejectionScore = program.get('directRejectionScore', 0)
     directAdmissionScore = program.get('directAdmissionScore', 0)
+    directRejectionSecondScore = program.get('directRejectionSecondScore', 0)
+    directAdmissionSecondScore = program.get('directAdmissionSecondScore', 0)
+
+    json_output[program_name_long]['fpso'] = fpso
+    json_output[program_name_long]['admissionDescription'] = admissionDescription
     json_output[program_name_long]['scores'] = {
+        'gpaScoreBoundaryGPA': gpaScoreBoundaryGPA,
         'gpaScore': gpaScore,
+        'coursesScore': coursesScore,
         'cvScore': cvScore,
         'mlScore': mlScore,
         'rlScore': rlScore,
         'essayScore': essayScore,
+        'gmatScore': gmatScore,
+        'greScore': greScore,
+        'interviewScore': interviewScore,
+        'firstRoundConsidered': firstRoundConsidered,
+        'secondRoundConsidered': secondRoundConsidered,
         'directRejectionScore': directRejectionScore,
         'directAdmissionScore': directAdmissionScore,
+        'directRejectionSecondScore': directRejectionSecondScore,
+        'directAdmissionSecondScore': directAdmissionSecondScore,
     }
+
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
         sortedcourses.to_excel(
             writer, sheet_name=program_name, startrow=start_row, header=True, index=False)
