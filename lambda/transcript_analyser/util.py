@@ -372,6 +372,7 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
     gmatScore = program.get('gmatScore', 0)
     greScore = program.get('greScore', 0)
     interviewScore = program.get('interviewScore', 0)
+    testScore = program.get('testScore', 0)
     firstRoundConsidered = program.get('firstRoundConsidered', [])
     secondRoundConsidered = program.get('secondRoundConsidered', [])
     directRejectionScore = program.get('directRejectionScore', 0)
@@ -392,6 +393,7 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
         'gmatScore': gmatScore,
         'greScore': greScore,
         'interviewScore': interviewScore,
+        'testScore': testScore,
         'firstRoundConsidered': firstRoundConsidered,
         'secondRoundConsidered': secondRoundConsidered,
         'directRejectionScore': directRejectionScore,
