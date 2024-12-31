@@ -364,6 +364,7 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
     admissionDescription = program.get('admissionDescription', "")
     gpaScoreBoundaryGPA = program.get('gpaScoreBoundaryGPA', 0)
     gpaScore = program.get('gpaScore', 0)
+    gpaMinScore = program.get('gpaMinScore', 0)
     coursesScore = program.get('coursesScore', 0)
     cvScore = program.get('cvScore', 0)
     mlScore = program.get('mlScore', 0)
@@ -385,6 +386,7 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
     json_output[program_name_long]['scores'] = {
         'gpaScoreBoundaryGPA': gpaScoreBoundaryGPA,
         'gpaScore': gpaScore,
+        'gpaMinScore': gpaMinScore,
         'coursesScore': coursesScore,
         'cvScore': cvScore,
         'mlScore': mlScore,
