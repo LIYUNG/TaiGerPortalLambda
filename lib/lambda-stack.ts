@@ -180,9 +180,7 @@ export class LambdaStack extends cdk.Stack {
             );
         } else {
             assumedBy = new CompositePrincipal(
-                new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo`),
-                new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_alex`),
-                new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_abby`)
+                new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:group/taiger_dev`)
             );
         }
         const clientRole = new Role(this, `AuthorizedClientRole-${props.stageName}`, {
