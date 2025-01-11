@@ -517,8 +517,13 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                     writer, sheet_name='General', startrow=start_row, index=False)
                 start_row += len(sortedcourses.index) + 2
 
+                # Adjust key length if needed
+                records = json.loads(sortedcourses.to_json(
+                    orient='records', indent=4))
+                id_key = next(
+                    (key for key in records[0] if len(key) == 24), None)
                 # Write to JSON
-                json_output['General'][f'sheet_{idx}'] = json.loads(
+                json_output['General'][id_key] = json.loads(
                     sortedcourses.to_json(orient='records', indent=4)
                 )
 
