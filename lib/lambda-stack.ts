@@ -49,7 +49,7 @@ export class LambdaStack extends cdk.Stack {
             throw new Error("Region is required");
         }
 
-        const API_ENDPOINT = `${props.domainStage}.${DOMAIN_NAME}`;
+        const API_ENDPOINT = `${props.domainStage}.course.${DOMAIN_NAME}`;
 
         const secret = Secret.fromSecretNameV2(
             this,
