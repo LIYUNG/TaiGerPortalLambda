@@ -193,6 +193,7 @@ export class LambdaStack extends cdk.Stack {
             );
         }
         const clientRole = new Role(this, `AuthorizedClientRole-${props.stageName}`, {
+            roleName: `transcript-analyzer-role-${props.domainStage}`,
             assumedBy,
             description: roleDescription
         });
