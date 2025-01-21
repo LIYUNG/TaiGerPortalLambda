@@ -175,9 +175,9 @@ export class LambdaStack extends cdk.Stack {
 
         if (props.isProd) {
             assumedBy = new CompositePrincipal(
-                new ArnPrincipal(
-                    `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
-                ),
+                // new ArnPrincipal(
+                //     `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
+                // ),
                 new ServicePrincipal("ec2.amazonaws.com"),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:role/ec2_taiger_test_infra`)
             );
