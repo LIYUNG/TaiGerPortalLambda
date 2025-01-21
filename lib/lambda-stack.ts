@@ -206,7 +206,7 @@ export class LambdaStack extends cdk.Stack {
                     ],
                     conditions: {
                         StringLike: {
-                            "aws:PrincipalArn": `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*`
+                            "aws:PrincipalArn": `arn:aws:sts::${AWS_ACCOUNT}:assumed-role/taiger-portal-service-role-${props.domainStage}/*`
                         }
                     }
                 })
