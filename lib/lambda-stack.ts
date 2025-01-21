@@ -183,9 +183,6 @@ export class LambdaStack extends cdk.Stack {
             );
         } else {
             assumedBy = new CompositePrincipal(
-                new ArnPrincipal(
-                    `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*` // including all task role
-                ),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo_dev`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_alex`),
@@ -197,6 +194,22 @@ export class LambdaStack extends cdk.Stack {
             assumedBy,
             description: roleDescription
         });
+
+        clientRole.assumeRolePolicy?.addStatements(
+            new PolicyStatement({
+                actions: ["sts:AssumeRole"],
+                principals: [
+                    new ArnPrincipal(
+                        `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*`
+                    )
+                ],
+                conditions: {
+                    StringLike: {
+                        "aws:PrincipalArn": `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*`
+                    }
+                }
+            })
+        );
 
         // Grant permission to invoke the API
         clientRole.addToPolicy(
