@@ -195,21 +195,23 @@ export class LambdaStack extends cdk.Stack {
             description: roleDescription
         });
 
-        clientRole.assumeRolePolicy?.addStatements(
-            new PolicyStatement({
-                actions: ["sts:AssumeRole"],
-                principals: [
-                    new ArnPrincipal(
-                        `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
-                    )
-                ],
-                conditions: {
-                    StringLike: {
-                        "aws:PrincipalArn": `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*`
+        if (!props.isProd) {
+            clientRole.assumeRolePolicy?.addStatements(
+                new PolicyStatement({
+                    actions: ["sts:AssumeRole"],
+                    principals: [
+                        new ArnPrincipal(
+                            `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
+                        )
+                    ],
+                    conditions: {
+                        StringLike: {
+                            "aws:PrincipalArn": `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*`
+                        }
                     }
-                }
-            })
-        );
+                })
+            );
+        }
 
         // Grant permission to invoke the API
         clientRole.addToPolicy(
