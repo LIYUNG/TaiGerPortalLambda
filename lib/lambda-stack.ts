@@ -200,7 +200,7 @@ export class LambdaStack extends cdk.Stack {
                 actions: ["sts:AssumeRole"],
                 principals: [
                     new ArnPrincipal(
-                        `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}/*`
+                        `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
                     )
                 ],
                 conditions: {
