@@ -183,6 +183,9 @@ export class LambdaStack extends cdk.Stack {
             );
         } else {
             assumedBy = new CompositePrincipal(
+                new ArnPrincipal(
+                    `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
+                ),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo_dev`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_alex`),
@@ -195,23 +198,23 @@ export class LambdaStack extends cdk.Stack {
             description: roleDescription
         });
 
-        if (!props.isProd) {
-            clientRole.assumeRolePolicy?.addStatements(
-                new PolicyStatement({
-                    actions: ["sts:AssumeRole"],
-                    principals: [
-                        new ArnPrincipal(
-                            `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
-                        )
-                    ],
-                    conditions: {
-                        StringLike: {
-                            "aws:PrincipalArn": `arn:aws:sts::${AWS_ACCOUNT}:assumed-role/taiger-portal-service-role-${props.domainStage}/*`
-                        }
-                    }
-                })
-            );
-        }
+        // if (!props.isProd) {
+        //     clientRole.assumeRolePolicy?.addStatements(
+        //         new PolicyStatement({
+        //             actions: ["sts:AssumeRole"],
+        //             principals: [
+        //                 new ArnPrincipal(
+        //                     `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
+        //                 )
+        //             ],
+        //             conditions: {
+        //                 StringLike: {
+        //                     "aws:PrincipalArn": `arn:aws:sts::${AWS_ACCOUNT}:assumed-role/taiger-portal-service-role-${props.domainStage}/*`
+        //                 }
+        //             }
+        //         })
+        //     );
+        // }
 
         // Grant permission to invoke the API
         clientRole.addToPolicy(
