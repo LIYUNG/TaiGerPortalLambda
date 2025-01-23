@@ -1,8 +1,11 @@
-# Welcome to your CDK TypeScript project
+# TaiGer Portal Lambda with AWS CDK TypeScript
 
-This is a blank project for CDK development with TypeScript.
+This package includes Cron job Lambda
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+- daily snapshot of back-up TaiGer Portal MongodbDB data in AWS S3 bucket.
+- daily email reminder for TaiGer Portal users.
+- daily snapshot of subset of TaiGer portal data in the S3 Bucket shared with TaiGer partner Tenfold AI for customized content recommendation.
+- AWS CDK Typescript stack that deploy Lambda, and IAM permissions.
 
 ## Useful commands
 
