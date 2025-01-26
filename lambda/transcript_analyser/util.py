@@ -586,7 +586,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
 
         return {
             'statusCode': 200,
-            'body': json.dumps({'data': transcript_path})
+            'body': json.dumps({'data': transcript_path, 'result': json_output})
         }
     except Exception as e:
         print(f"Error: {e}")
