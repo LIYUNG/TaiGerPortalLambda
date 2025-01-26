@@ -1,11 +1,9 @@
 # TaiGer Portal Lambda with AWS CDK TypeScript
 
-This package includes Cron job Lambda
+This package includes TaiGer Transcript Analyser Lambda and AWS CDK:
 
-- daily snapshot of back-up TaiGer Portal MongodbDB data in AWS S3 bucket.
-- daily email reminder for TaiGer Portal users.
-- daily snapshot of subset of TaiGer portal data in the S3 Bucket shared with TaiGer partner Tenfold AI for customized content recommendation.
-- AWS CDK Typescript stack that deploy Lambda, and IAM permissions.
+- Python-based Lambda that analyses transcript against the university programs.
+- AWS Typescript implementation for CodePipeline and deployment of Lambda and API Gateway as well as IAM role and whitelisted permissions.
 
 ## Useful commands
 
