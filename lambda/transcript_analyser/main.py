@@ -23,9 +23,3 @@ def analyze_transcript(str_courses, student_id, student_name, language, str_cour
         course_arr, student_id, student_name, language, requirement_ids_arr)
 
     return result
-
-
-if __name__ == "__main__":
-    analyze_transcript(sys.argv[1], sys.argv[2], sys.argv[3],
-                       sys.argv[4], sys.argv[5])
-    

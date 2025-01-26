@@ -75,7 +75,7 @@ def post_analyze_courses(event):
     # Now you can work with the request body
     print("Request body:", body)
 
-    analyze_transcript(body['courses'],
+    result = analyze_transcript(body['courses'],
                        body['student_id'],
                        body['student_name'],
                        body['language'],
@@ -84,5 +84,5 @@ def post_analyze_courses(event):
 
     return {
         'statusCode': 200,
-        'body': json.dumps(f'Received body: {body}')
+        'body': result
     }

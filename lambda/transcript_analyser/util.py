@@ -584,10 +584,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
         s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
             Key=transcript_json_path, Body=json_buffer)
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps({'data': transcript_path, 'result': json_output})
-        }
+        return json.dumps({'data': transcript_path, 'result': json_output})
     except Exception as e:
         print(f"Error: {e}")
         return {
