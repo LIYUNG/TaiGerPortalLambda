@@ -11,6 +11,7 @@ import gc
 import sys
 import os
 import io
+# import boto3
 
 
 KEY_WORDS = 0
@@ -327,8 +328,10 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
             [df_PROG_SPEC_CATES[idx], df_category_credits_sum])
     return df_PROG_SPEC_CATES
 
+# TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
-def WriteToExcel(json_output, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program):
+
+def WriteToExcel(writer, json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -351,6 +354,8 @@ def WriteToExcel(json_output, program_name_long, program_category, baseCategoryT
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].drop(
                 columns=['Others', '建議修課'], inplace=True)
 
+    # Write to Excel
+    start_row = 0
     # Write to Json
     json_output[program_name_long] = {
         'sorted': {}, 'suggestion': {}, 'scores': {}, 'fpso': "", 'admissionDescription': ""}
@@ -400,6 +405,13 @@ def WriteToExcel(json_output, program_name_long, program_category, baseCategoryT
     }
 
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
+        sortedcourses.to_excel(
+            writer, sheet_name=program_name, startrow=start_row, header=True, index=False)
+        df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_excel(
+            writer, sheet_name=program_name, startrow=start_row, startcol=5, header=True, index=False)
+        start_row += max(len(sortedcourses.index),
+                         len(df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].index)) + 2
+
         json_output[program_name_long]['sorted'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
             sortedcourses.to_json(orient='records', indent=4)
         )
@@ -408,16 +420,29 @@ def WriteToExcel(json_output, program_name_long, program_category, baseCategoryT
                 orient='records', indent=4)
         )
 
+    # Formatting
+    workbook = writer.book
+    worksheet = writer.sheets[program_name]
+    red_out_failed_subject(workbook, worksheet, 1, start_row)
+    # red_out_insufficient_credit(workbook, worksheet)
+
+    for df in df_PROG_SPEC_CATES:
+        for i, col in enumerate(df.columns):
+            # set the column length
+            worksheet.set_column(i, i, column_len_array[i] * 2)
     gc.collect()  # Forced GC
     print("Save to " + program_name_long)
 
 
 def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, column_len_array, studentId, student_name, analysis_language, requirement_ids_arr=[]):
     df_transcript = pd.DataFrame.from_dict(courses_arr)
+    # TODO: move the checking mechanism to util.py!
+    # Verify the format of transcript_course_list.xlsx
     CheckTemplateFormat(df_transcript, analysis_language)
     print("Checked input template successfully.")
 
     df_database = pd.DataFrame.from_dict(courses_db)
+    # # Verify the format of Course_database.xlsx
     CheckDBFormat(df_database)
     print("Checked database successfully.")
 
@@ -549,14 +574,18 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
     AWS_S3_BUCKET_NAME = os.environ.get("AWS_S3_BUCKET_NAME")
     print(AWS_S3_BUCKET_NAME)
     try:
+        # s3 = boto3.resource('s3')
+        # transcript_path = studentId + '/analysed_transcript_' + student_name + '.xlsx'
         transcript_json_path = studentId + '/analysed_transcript_' + student_name + '.json'
         print('transcript_json_path: ', transcript_json_path)
+        # s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
+        #     Key=transcript_path, Body=data)
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps({
-                'transcript_json_path': transcript_json_path, 'result': json_output})
-        }
+        # s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
+        #     Key=transcript_json_path, Body=json_buffer)
+
+        return json.dumps({
+            'transcript_json_path': transcript_json_path, 'result': json_output})
     except Exception as e:
         print(f"Error: {e}")
         return {
@@ -636,7 +665,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     ####################### End #########################################
     #####################################################################
 
-    WriteToExcel(json_output, program_name_long, program_categories, baseCategoryToProgramMapping,
+    WriteToExcel(writer, json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
                  transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program)
 
 

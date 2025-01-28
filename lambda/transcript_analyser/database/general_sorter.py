@@ -19,7 +19,4 @@ def general_sorter_function(course_arr, studentId, student_name, analysis_langua
 
     result = Classifier(course_arr, all_course_db,
                basic_classification_en, basic_classification_zh, column_len_array, studentId, student_name, analysis_language, requirement_ids_arr)
-    return {
-        'statusCode': 200,
-        'body': result
-    }
+    return result
