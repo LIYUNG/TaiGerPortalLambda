@@ -11,8 +11,6 @@ import gc
 import sys
 import os
 import io
-# import boto3
-
 
 KEY_WORDS = 0
 ANTI_KEY_WORDS = 1
@@ -574,15 +572,8 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
     AWS_S3_BUCKET_NAME = os.environ.get("AWS_S3_BUCKET_NAME")
     print(AWS_S3_BUCKET_NAME)
     try:
-        # s3 = boto3.resource('s3')
-        # transcript_path = studentId + '/analysed_transcript_' + student_name + '.xlsx'
         transcript_json_path = studentId + '/analysed_transcript_' + student_name + '.json'
         print('transcript_json_path: ', transcript_json_path)
-        # s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
-        #     Key=transcript_path, Body=data)
-
-        # s3.Bucket(AWS_S3_BUCKET_NAME).put_object(
-        #     Key=transcript_json_path, Body=json_buffer)
 
         return json.dumps({
             'transcript_json_path': transcript_json_path, 'result': json_output})
