@@ -4,82 +4,44 @@ from botocore.exceptions import ClientError
 from pymongo import MongoClient
 from bson import ObjectId
 
-from globals import programs_mock
-
 # Global variables to store the MongoDB client and database connection
-mongo_client = None
-db = None
+secret_name = os.environ.get("MONGODB_URI_SECRET_NAME")
+region_name = os.environ.get("REGION")
 
-# Initialize the Secrets Manager client
-secrets_manager = boto3.client('secretsmanager')
-
-
-# Use this code snippet in your app.
-# If you need more information about configurations
-# or implementing the sample code, visit the AWS docs:
-# https://aws.amazon.com/developer/language/python/
-
-
-def get_aws_secret():
-
-    secret_name = os.environ.get("MONGODB_URI_SECRET_NAME")
-    region_name = os.environ.get("REGION")
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
+# Create a Secrets Manager client
+session = boto3.session.Session()
+client = session.client(
+    service_name='secretsmanager',
+    region_name=region_name
+)
+try:
+    get_secret_value_response = client.get_secret_value(
+        SecretId=secret_name
     )
+except ClientError as e:
+    # For a list of exceptions thrown, see
+    # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+    raise e
 
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        raise e
-
-    secret = get_secret_value_response['SecretString']
-
-    return secret
-
-
-def get_database():
-    global mongo_client
-    global db
-
-    if db is None:
-        MONGODB_URI = get_aws_secret()
-        MONGODB_NAME = os.environ.get("MONGODB_NAME")
-        mongo_uri = MONGODB_URI
-        db_name = MONGODB_NAME
-
-        # Create a new client and connect to the server
-        mongo_client = MongoClient(
-            mongo_uri, readPreference='primary', readConcernLevel='majority')
-
-        # Send a ping to confirm a successful connection
-        try:
-            mongo_client.admin.command('ping')
-            print("Successfully connected to MongoDB!")
-        except Exception as e:
-            print(f"Failed to connect to MongoDB: {e}")
-            raise e
-
-        # Get the database
-        db = mongo_client[db_name]
-
-    return db
+secret = get_secret_value_response['SecretString']
+MONGODB_URI = secret
+MONGODB_NAME = os.environ.get("MONGODB_NAME")
+mongo_uri = MONGODB_URI
+db_name = MONGODB_NAME
+mongo_client = mongo_client = MongoClient(
+    mongo_uri, readPreference='primary', readConcernLevel='majority')
+try:
+    mongo_client.admin.command('ping')
+    print("Successfully connected to MongoDB!")
+except Exception as e:
+    print(f"Failed to connect to MongoDB: {e}")
+    raise e
+db = mongo_client[db_name]
 
 
 def get_requirements_collection(requirement_ids_list=None):
-    # Get the database connection
-    database = get_database()
-
     # Use the database connection to perform operations
-    collection = database['programrequirements']
+    collection = db['programrequirements']
 
     # Convert string IDs to ObjectId, skipping invalid ones
     if requirement_ids_list:
@@ -131,11 +93,8 @@ def get_requirements_collection(requirement_ids_list=None):
 
 
 def get_all_courses_db_collection():
-    # Get the database connection
-    database = get_database()
-
     # Use the database connection to perform operations
-    collection = database['allcourses']
+    collection = db['allcourses']
 
     query = {}
 
@@ -146,11 +105,8 @@ def get_all_courses_db_collection():
 
 
 def get_keywords_collection():
-    # Get the database connection
-    database = get_database()
-
     # Use the database connection to perform operations
-    collection = database['keywordsets']
+    collection = db['keywordsets']
 
     # Example: Fetch all documents from the collection
     documents = list(collection.find({}).sort("categoryName", 1))
