@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import { Code } from "aws-cdk-lib/aws-lambda";
+import { Code, SnapStartConf } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
 import { Function, Runtime } from "aws-cdk-lib/aws-lambda";
@@ -67,10 +67,10 @@ export class LambdaStack extends cdk.Stack {
             this,
             `${TENANT_NAME}-TranscriptAnalyzer-Function-${props.stageName}`,
             {
-                runtime: Runtime.PYTHON_3_9,
+                runtime: Runtime.PYTHON_3_12,
                 code: Code.fromAsset(path.join(__dirname, "..", "lambda", "transcript_analyser"), {
                     bundling: {
-                        image: Runtime.PYTHON_3_9.bundlingImage,
+                        image: Runtime.PYTHON_3_12.bundlingImage,
                         command: [
                             "bash",
                             "-c",
@@ -87,7 +87,8 @@ export class LambdaStack extends cdk.Stack {
                     MONGODB_NAME: props.mongoDBName,
                     REGION: props.env.region,
                     AWS_S3_BUCKET_NAME: bucket.bucketName // Pass the bucket name to the Lambda
-                }
+                },
+                snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS
             }
         );
 
