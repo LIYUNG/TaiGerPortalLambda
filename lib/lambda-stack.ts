@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import { Code, SnapStartConf } from "aws-cdk-lib/aws-lambda";
+import { Alias, Code, SnapStartConf, Version } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
 import { Function, Runtime } from "aws-cdk-lib/aws-lambda";
@@ -92,6 +92,17 @@ export class LambdaStack extends cdk.Stack {
             }
         );
 
+        // Explicitly publish a new Lambda version
+        const lambdaVersion = new Version(this, `LambdaVersion-${props.stageName}`, {
+            lambda: lambdaFunction
+        });
+
+        // Alias pointing to the latest published version
+        const lambdaAlias = new Alias(this, "LambdaAlias", {
+            aliasName: "live",
+            version: lambdaVersion
+        });
+
         // Grant Lambda permission to read the secret
         secret.grantRead(lambdaFunction);
         // Grant permission for the Lambda function to upload to the S3 bucket
@@ -152,7 +163,7 @@ export class LambdaStack extends cdk.Stack {
         });
 
         // Lambda integration
-        const lambdaIntegration = new LambdaIntegration(lambdaFunction, {
+        const lambdaIntegration = new LambdaIntegration(lambdaAlias, {
             proxy: true // Proxy all requests to the Lambda
         });
 
