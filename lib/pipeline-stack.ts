@@ -1,7 +1,13 @@
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { Stack, StackProps, SecretValue } from "aws-cdk-lib";
-import { CodeBuildStep, CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
+import {
+    CodeBuildStep,
+    CodePipeline,
+    CodePipelineSource,
+    ManualApprovalStep,
+    ShellStep
+} from "aws-cdk-lib/pipelines";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import { Construct } from "constructs";
@@ -76,7 +82,13 @@ export class PipelineStack extends cdk.Stack {
                         fileS3BucketName
                     }
                 );
-                pipeline.addStage(stage);
+                if (isProd) {
+                    pipeline.addStage(stage, {
+                        pre: [new ManualApprovalStep("ApproveIfStable")]
+                    });
+                } else {
+                    pipeline.addStage(stage);
+                }
             }
         );
     }
