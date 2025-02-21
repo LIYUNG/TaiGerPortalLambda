@@ -481,34 +481,32 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
     json_output = {'General': {},
                    'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()}
 
-    with io.BytesIO() as output:
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            for idx, sortedcourses in enumerate(sorted_courses):
-                if sortedcourses.empty:
-                    # print(f"Skipping empty DataFrame at index {idx}")
-                    continue  # Skip to the next DataFrame if empty
+    for idx, sortedcourses in enumerate(sorted_courses):
+        if sortedcourses.empty:
+            # print(f"Skipping empty DataFrame at index {idx}")
+            continue  # Skip to the next DataFrame if empty
 
-                # Adjust key length if needed
-                records = json.loads(sortedcourses.to_json(
-                    orient='records', indent=4))
-                id_key = next(
-                    (key for key in records[0] if len(key) == 24), None)
-                # Write to JSON
-                json_output['General'][id_key] = json.loads(
-                    sortedcourses.to_json(orient='records', indent=4)
-                )
+        # Adjust key length if needed
+        records = json.loads(sortedcourses.to_json(
+            orient='records', indent=4))
+        id_key = next(
+            (key for key in records[0] if len(key) == 24), None)
+        # Write to JSON
+        json_output['General'][id_key] = json.loads(
+            sortedcourses.to_json(orient='records', indent=4)
+        )
 
-            programs = get_programs_analysis_collection(
-                requirement_ids_arr)
-            print('programs', programs)
+    programs = get_programs_analysis_collection(
+        requirement_ids_arr)
+    print('programs', programs)
 
-            # Create Excel Sheets
-            for idx, program in enumerate(programs):
-                createSheet(
-                    transcript_sorted_group_map,
-                    sorted_courses,
-                    df_category_courses_sugesstion_data,
-                    json_output, program)
+    # Create
+    for idx, program in enumerate(programs):
+        createSheet(
+            transcript_sorted_group_map,
+            sorted_courses,
+            df_category_courses_sugesstion_data,
+            json_output, program)
 
     # Save JSON data
     print('json_output: ', json_output)
