@@ -47,13 +47,13 @@ def ProgramCategoryInit(program_categories):
 def CheckTemplateFormat(df_transcript, analysis_lang):
     if analysis_lang == 'zh':
         if 'course_chinese' not in df_transcript.columns or 'credits' not in df_transcript.columns or 'grades' not in df_transcript.columns:
-            print("Error: Please check the student's transcript xlsx file.")
+            print("Error: Please check the student's transcript input.")
             print(
                 " There must be course_chinese, credits and grades in student's course excel file.")
             sys.exit(1)
     elif analysis_lang == 'en':
         if 'course_english' not in df_transcript.columns or 'credits' not in df_transcript.columns or 'grades' not in df_transcript.columns:
-            print("Error: Please check the student's transcript xlsx file.")
+            print("Error: Please check the student's transcript input.")
             print(
                 " There must be course_english, credits and grades in student's course excel file.")
             sys.exit(1)
@@ -61,7 +61,7 @@ def CheckTemplateFormat(df_transcript, analysis_lang):
 
 def CheckDBFormat(df_database):
     if 'all_course_chinese' not in df_database.columns:
-        print("Error: Please check the database xlsx file.")
+        print("Error: Please check the database mongodb course format.")
         sys.exit(1)
 
 
@@ -329,7 +329,7 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
 # TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
 
-def WriteToExcel(writer, json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program):
+def WriteToExcel(json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -352,8 +352,6 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
             df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].drop(
                 columns=['Others', '建議修課'], inplace=True)
 
-    # Write to Excel
-    start_row = 0
     # Write to Json
     json_output[program_name_long] = {
         'sorted': {}, 'suggestion': {}, 'scores': {}, 'fpso': "", 'admissionDescription': ""}
@@ -403,13 +401,6 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
     }
 
     for idx, sortedcourses in enumerate(df_PROG_SPEC_CATES):
-        sortedcourses.to_excel(
-            writer, sheet_name=program_name, startrow=start_row, header=True, index=False)
-        df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].to_excel(
-            writer, sheet_name=program_name, startrow=start_row, startcol=5, header=True, index=False)
-        start_row += max(len(sortedcourses.index),
-                         len(df_PROG_SPEC_CATES_COURSES_SUGGESTION[idx].index)) + 2
-
         json_output[program_name_long]['sorted'][df_PROG_SPEC_CATES[idx].columns[0]] = json.loads(
             sortedcourses.to_json(orient='records', indent=4)
         )
@@ -418,16 +409,6 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
                 orient='records', indent=4)
         )
 
-    # Formatting
-    workbook = writer.book
-    worksheet = writer.sheets[program_name]
-    red_out_failed_subject(workbook, worksheet, 1, start_row)
-    # red_out_insufficient_credit(workbook, worksheet)
-
-    for df in df_PROG_SPEC_CATES:
-        for i, col in enumerate(df.columns):
-            # set the column length
-            worksheet.set_column(i, i, column_len_array[i] * 2)
     gc.collect()  # Forced GC
     print("Save to " + program_name_long)
 
@@ -435,12 +416,12 @@ def WriteToExcel(writer, json_output, program_name, program_name_long, program_c
 def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, column_len_array, studentId, student_name, analysis_language, requirement_ids_arr=[]):
     df_transcript = pd.DataFrame.from_dict(courses_arr)
     # TODO: move the checking mechanism to util.py!
-    # Verify the format of transcript_course_list.xlsx
+    # Verify the format of transcript_course_list input
     CheckTemplateFormat(df_transcript, analysis_language)
     print("Checked input template successfully.")
 
     df_database = pd.DataFrame.from_dict(courses_db)
-    # # Verify the format of Course_database.xlsx
+    # # Verify the format of course db
     CheckDBFormat(df_database)
     print("Checked database successfully.")
 
@@ -556,9 +537,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                     transcript_sorted_group_map,
                     sorted_courses,
                     df_category_courses_sugesstion_data,
-                    writer, json_output, program)
-
-        data = output.getvalue()
+                    json_output, program)
 
     # Save JSON data
     print('json_output: ', json_output)
@@ -606,7 +585,7 @@ def convertingKeywordsSetArrayToObject(program_categories):
     return baseCategoryToProgramMapping
 
 
-def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_courses_sugesstion_data, writer, json_output, program):
+def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_courses_sugesstion_data, json_output, program):
     # TODO: schema not matched to db.
     the_program = program['programId'][0]
     program_name = ' '.join(
@@ -656,7 +635,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     ####################### End #########################################
     #####################################################################
 
-    WriteToExcel(writer, json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
+    WriteToExcel(json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
                  transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program)
 
 
