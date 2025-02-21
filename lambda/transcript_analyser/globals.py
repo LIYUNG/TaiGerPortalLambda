@@ -1,6 +1,5 @@
 
 # Global variable:
-column_len_array = []
 
 programs_mock = [
     {

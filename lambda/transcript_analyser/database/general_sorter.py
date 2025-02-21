@@ -1,6 +1,5 @@
 from CourseSuggestionAlgorithms import *
 from util import *
-from globals import column_len_array
 from db import get_keywords_collection, convert_courses, get_all_courses_db_collection
 
 
@@ -18,5 +17,5 @@ def general_sorter_function(course_arr, studentId, student_name, analysis_langua
     print('all_course_db: ', all_course_db)
 
     result = Classifier(course_arr, all_course_db,
-               basic_classification_en, basic_classification_zh, column_len_array, studentId, student_name, analysis_language, requirement_ids_arr)
+               basic_classification_en, basic_classification_zh, studentId, student_name, analysis_language, requirement_ids_arr)
     return result

@@ -1,8 +1,6 @@
 import json
 import pandas as pd
 from CourseSuggestionAlgorithms import *
-from cell_formatter import red_out_failed_subject, red_out_insufficient_credit
-from globals import column_len_array
 from db import get_programs_analysis_collection
 from bson import ObjectId  # Import ObjectId from pymongo or bson
 import datetime
@@ -329,7 +327,7 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
 # TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
 
-def WriteToExcel(json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program):
+def WriteToExcel(json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -413,7 +411,7 @@ def WriteToExcel(json_output, program_name, program_name_long, program_category,
     print("Save to " + program_name_long)
 
 
-def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, column_len_array, studentId, student_name, analysis_language, requirement_ids_arr=[]):
+def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, studentId, student_name, analysis_language, requirement_ids_arr=[]):
     df_transcript = pd.DataFrame.from_dict(courses_arr)
     # TODO: move the checking mechanism to util.py!
     # Verify the format of transcript_course_list input
@@ -485,16 +483,10 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
 
     with io.BytesIO() as output:
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            start_row = 0
             for idx, sortedcourses in enumerate(sorted_courses):
                 if sortedcourses.empty:
                     # print(f"Skipping empty DataFrame at index {idx}")
                     continue  # Skip to the next DataFrame if empty
-
-                # Write to Excel
-                sortedcourses.to_excel(
-                    writer, sheet_name='General', startrow=start_row, index=False)
-                start_row += len(sortedcourses.index) + 2
 
                 # Adjust key length if needed
                 records = json.loads(sortedcourses.to_json(
@@ -505,27 +497,6 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
                 json_output['General'][id_key] = json.loads(
                     sortedcourses.to_json(orient='records', indent=4)
                 )
-
-            workbook = writer.book
-            worksheet = writer.sheets['General']
-
-            red_out_failed_subject(workbook, worksheet, 1, start_row)
-
-            for i, col in enumerate(df_transcript.columns):
-                # find length of column i
-
-                column_len = df_transcript[col].astype(str).str.len().max()
-                # Setting the length if the column header is larger
-                # than the max column value length
-                if i == 1:
-                    column_len_array.append(len(col))
-                else:
-                    column_len_array.append(max(column_len, len(col)))
-
-                # set the column length
-                worksheet.set_column(i, i, column_len_array[i] * 2)
-                # Modify to column width for "requiredECTS"
-                column_len_array.append(6)
 
             programs = get_programs_analysis_collection(
                 requirement_ids_arr)
@@ -636,7 +607,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     #####################################################################
 
     WriteToExcel(json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
-                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, column_len_array, program)
+                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program)
 
 
 def custom_json_serializer(obj):
