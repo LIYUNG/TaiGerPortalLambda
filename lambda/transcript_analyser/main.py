@@ -3,7 +3,7 @@ import json
 from database.general_sorter import general_sorter_function
 
 
-def analyze_transcript(str_courses, student_id, student_name, language, str_courses_taiger_guided, requirement_ids="[]"):
+def analyze_transcript(str_courses, student_id, student_name, factor, language, str_courses_taiger_guided, requirement_ids="[]"):
     print("--------------------------")
     print("New Transcript Analyser")
     print("Python version:")
@@ -20,6 +20,6 @@ def analyze_transcript(str_courses, student_id, student_name, language, str_cour
     print("requirement_ids_arr", requirement_ids_arr)
 
     result = general_sorter_function(
-        course_arr, student_id, student_name, language, requirement_ids_arr)
+        course_arr, student_id, student_name, factor, language, requirement_ids_arr)
 
     return result

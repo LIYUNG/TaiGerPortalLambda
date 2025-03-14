@@ -78,6 +78,7 @@ def post_analyze_courses(event):
     result = analyze_transcript(body['courses'],
                        body['student_id'],
                        body['student_name'],
+                       body['factor'],
                        body['language'],
                        body['courses_taiger_guided'],
                        body['requirement_ids'])

@@ -304,7 +304,7 @@ def DatabaseCourseSorting(df_database, df_category_courses_sugesstion_data, tran
     return df_category_courses_sugesstion_data
 
 
-def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
+def AppendCreditsCount(df_PROG_SPEC_CATES, program_category, factor):
     for idx, trans_cat in enumerate(df_PROG_SPEC_CATES):
         df_PROG_SPEC_CATES[idx]['credits'] = df_PROG_SPEC_CATES[idx]['credits'].astype(
             float, errors='ignore')
@@ -316,7 +316,7 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
         df_PROG_SPEC_CATES[idx] = pd.concat(
             [df_PROG_SPEC_CATES[idx], df_category_credits_sum])
         maxScore = program_category[idx].get('maxScore', 0)
-        category_credits_sum = {trans_cat.columns[0]: "ECTS轉換", 'credits': 1.5 *
+        category_credits_sum = {trans_cat.columns[0]: "ECTS轉換", 'credits': factor *
                                 credit_sum, 'requiredECTS': program_category[idx]['requiredECTS'], 'maxScore': maxScore}
         df_category_credits_sum = pd.DataFrame(
             data=category_credits_sum, index=[0])
@@ -327,7 +327,7 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category):
 # TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
 
-def WriteToExcel(json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program):
+def WriteToExcel(json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -342,7 +342,7 @@ def WriteToExcel(json_output, program_name, program_name_long, program_category,
 
     # append 總credits for each program category
     df_PROG_SPEC_CATES = AppendCreditsCount(
-        df_PROG_SPEC_CATES, program_category)
+        df_PROG_SPEC_CATES, program_category, factor)
 
     # drop the Others, 建議修課
     for idx, trans_cat in enumerate(df_PROG_SPEC_CATES_COURSES_SUGGESTION):
@@ -411,7 +411,7 @@ def WriteToExcel(json_output, program_name, program_name_long, program_category,
     print("Save to " + program_name_long)
 
 
-def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, studentId, student_name, analysis_language, requirement_ids_arr=[]):
+def Classifier(courses_arr, courses_db, basic_classification_en, basic_classification_zh, studentId, student_name, factor, analysis_language, requirement_ids_arr=[]):
     df_transcript = pd.DataFrame.from_dict(courses_arr)
     # TODO: move the checking mechanism to util.py!
     # Verify the format of transcript_course_list input
@@ -506,7 +506,8 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
             transcript_sorted_group_map,
             sorted_courses,
             df_category_courses_sugesstion_data,
-            json_output, program)
+            json_output, program,
+            factor)
 
     # Save JSON data
     print('json_output: ', json_output)
@@ -554,7 +555,7 @@ def convertingKeywordsSetArrayToObject(program_categories):
     return baseCategoryToProgramMapping
 
 
-def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_courses_sugesstion_data, json_output, program):
+def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_courses_sugesstion_data, json_output, program, factor):
     # TODO: schema not matched to db.
     the_program = program['programId'][0]
     program_name = ' '.join(
@@ -605,7 +606,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     #####################################################################
 
     WriteToExcel(json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
-                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program)
+                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor)
 
 
 def custom_json_serializer(obj):
