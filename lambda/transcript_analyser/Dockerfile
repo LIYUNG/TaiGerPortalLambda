@@ -12,4 +12,4 @@ RUN pip install --platform manylinux2014_aarch64 --only-binary=:all: -r requirem
 COPY . .
 
 # Move all dependencies and code to /asset-output (required for AWS CDK)
-RUN mkdir -p /asset-output && cp -r . /asset-output
+RUN mkdir -p /asset && cp -r . /asset

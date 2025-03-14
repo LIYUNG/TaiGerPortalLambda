@@ -1,5 +1,4 @@
 import * as cdk from "aws-cdk-lib";
-import * as lambda from "aws-cdk-lib/aws-lambda";
 import { Stack, StackProps, SecretValue } from "aws-cdk-lib";
 import {
     CodeBuildStep,
@@ -9,7 +8,6 @@ import {
     ShellStep
 } from "aws-cdk-lib/pipelines";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
-import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import { Construct } from "constructs";
 import {
     GITHUB_OWNER,
@@ -19,12 +17,10 @@ import {
 } from "../configuration/dependencies";
 import { PipelineAppStage } from "./app-stage";
 import { STAGES } from "../constants";
-import { Bucket } from "aws-cdk-lib/aws-s3";
-import { Artifact } from "aws-cdk-lib/aws-codepipeline";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export class PipelineStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         // Define the source for the pipeline
