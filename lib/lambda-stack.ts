@@ -196,9 +196,9 @@ export class LambdaStack extends cdk.Stack {
             );
         } else {
             assumedBy = new CompositePrincipal(
-                new ArnPrincipal(
-                    `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
-                ),
+                // new ArnPrincipal(
+                //     `arn:aws:iam::${AWS_ACCOUNT}:role/taiger-portal-service-role-${props.domainStage}`
+                // ),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo_dev`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_alex`),
