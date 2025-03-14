@@ -510,6 +510,7 @@ def Classifier(courses_arr, courses_db, basic_classification_en, basic_classific
             factor)
 
     # Save JSON data
+    json_output['factor'] = factor
     print('json_output: ', json_output)
 
     json_buffer = io.BytesIO()
