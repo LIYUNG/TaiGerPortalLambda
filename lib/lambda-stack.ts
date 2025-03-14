@@ -68,16 +68,9 @@ export class LambdaStack extends cdk.Stack {
             `${TENANT_NAME}-TranscriptAnalyzer-Function-${props.stageName}`,
             {
                 runtime: Runtime.PYTHON_3_12,
-                code: Code.fromAsset(path.join(__dirname, "..", "lambda", "transcript_analyser"), {
-                    bundling: {
-                        image: Runtime.PYTHON_3_12.bundlingImage,
-                        command: [
-                            "bash",
-                            "-c",
-                            "pip install -r requirements.txt -t /asset-output && cp -r . /asset-output"
-                        ]
-                    }
-                }), // Use the zip artifact from CodeBuild
+                code: Code.fromDockerBuild(
+                    path.join(__dirname, "..", "lambda", "transcript_analyser")
+                ),
                 memorySize: 512,
                 architecture: Architecture.ARM_64,
                 handler: "lambda_function.lambda_function",
