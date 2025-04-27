@@ -67,6 +67,7 @@ export class LambdaStack extends cdk.Stack {
             this,
             `${TENANT_NAME}-TranscriptAnalyzer-Function-${props.stageName}`,
             {
+                functionName: `${TENANT_NAME}-TranscriptAnalyzer-${props.stageName}`,
                 runtime: Runtime.PYTHON_3_12,
                 code: Code.fromDockerBuild(
                     path.join(__dirname, "..", "lambda", "transcript_analyser")
@@ -86,15 +87,10 @@ export class LambdaStack extends cdk.Stack {
             }
         );
 
-        // Explicitly publish a new Lambda version
-        const lambdaVersion = new Version(this, `LambdaVersion-${props.stageName}`, {
-            lambda: lambdaFunction
-        });
-
         // Alias pointing to the latest published version
         const lambdaAlias = new Alias(this, "LambdaAlias", {
             aliasName: "live",
-            version: lambdaVersion
+            version: lambdaFunction.currentVersion
         });
 
         // Grant Lambda permission to read the secret
