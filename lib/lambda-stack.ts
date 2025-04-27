@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import { Alias, Architecture, Code, SnapStartConf, Version } from "aws-cdk-lib/aws-lambda";
+import { Architecture, Code, SnapStartConf } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
 import { Function, Runtime } from "aws-cdk-lib/aws-lambda";
