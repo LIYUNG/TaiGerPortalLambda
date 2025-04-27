@@ -68,6 +68,9 @@ export class LambdaStack extends cdk.Stack {
             `${TENANT_NAME}-TranscriptAnalyzer-Function-${props.stageName}`,
             {
                 functionName: `${TENANT_NAME}-TranscriptAnalyzer-${props.stageName}`,
+                currentVersionOptions: {
+                    removalPolicy: cdk.RemovalPolicy.DESTROY
+                },
                 runtime: Runtime.PYTHON_3_12,
                 code: Code.fromDockerBuild(
                     path.join(__dirname, "..", "lambda", "transcript_analyser")
@@ -86,12 +89,6 @@ export class LambdaStack extends cdk.Stack {
                 snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS
             }
         );
-
-        // Alias pointing to the latest published version
-        const lambdaAlias = new Alias(this, "LambdaAlias", {
-            aliasName: "live",
-            version: lambdaFunction.currentVersion
-        });
 
         // Grant Lambda permission to read the secret
         secret.grantRead(lambdaFunction);
@@ -153,7 +150,7 @@ export class LambdaStack extends cdk.Stack {
         });
 
         // Lambda integration
-        const lambdaIntegration = new LambdaIntegration(lambdaAlias, {
+        const lambdaIntegration = new LambdaIntegration(lambdaFunction, {
             proxy: true // Proxy all requests to the Lambda
         });
 
