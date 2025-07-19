@@ -179,7 +179,7 @@ export class LambdaStack extends cdk.Stack {
                 // ),
                 new ServicePrincipal("ec2.amazonaws.com"),
                 new ArnPrincipal(
-                    `arn:aws:iam::${AWS_ACCOUNT}:role/TaiGerPortalService-ecs-ec2-EcsEc2-${props.stageName}-TaskRole`
+                    `arn:aws:iam::${AWS_ACCOUNT}:role/TaiGerPortalService-ecs-ec2-EcsEc2-${props.domainStage}-TaskRole`
                 )
             );
         } else {
@@ -192,7 +192,7 @@ export class LambdaStack extends cdk.Stack {
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_alex`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_abby`),
                 new ArnPrincipal(
-                    `arn:aws:iam::${AWS_ACCOUNT}:role/TaiGerPortalService-ecs-ec2-EcsEc2-${props.stageName}-TaskRole`
+                    `arn:aws:iam::${AWS_ACCOUNT}:role/TaiGerPortalService-ecs-ec2-EcsEc2-${props.domainStage}-TaskRole`
                 )
             );
         }
