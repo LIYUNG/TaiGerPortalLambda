@@ -174,12 +174,14 @@ export class LambdaStack extends cdk.Stack {
 
         if (props.isProd) {
             assumedBy = new CompositePrincipal(
+                new ServicePrincipal("ecs-tasks.amazonaws.com"),
                 new ArnPrincipal(
                     `arn:aws:iam::${AWS_ACCOUNT}:role/TaiGerPortalService-ecs-ec2-EcsEc2-${props.domainStage}-TaskRole`
                 )
             );
         } else {
             assumedBy = new CompositePrincipal(
+                new ServicePrincipal("ecs-tasks.amazonaws.com"),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo_dev`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_leo`),
                 new ArnPrincipal(`arn:aws:iam::${AWS_ACCOUNT}:user/taiger_alex`),
