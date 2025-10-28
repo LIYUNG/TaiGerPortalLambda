@@ -119,6 +119,9 @@ export class LambdaStack extends cdk.Stack {
             description: "This service handles requests with Lambda.",
             deployOptions: {
                 stageName: "prod" // Your API stage
+            },
+            endpointConfiguration: {
+                types: [EndpointType.REGIONAL]
             }
         });
 
