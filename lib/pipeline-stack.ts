@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import { Stack, StackProps, SecretValue } from "aws-cdk-lib";
+import { Stack, StackProps, SecretValue, Duration, RemovalPolicy } from "aws-cdk-lib";
 import {
     CodeBuildStep,
     CodePipeline,
@@ -16,8 +16,9 @@ import {
     GITHUB_TOKEN
 } from "../configuration/dependencies";
 import { PipelineAppStage } from "./app-stage";
-import { STAGES } from "../constants";
+import { Region, STAGES } from "../constants";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { BlockPublicAccess, Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -36,6 +37,36 @@ export class PipelineStack extends cdk.Stack {
         // Create the high-level CodePipeline
         const pipeline = new CodePipeline(this, "Pipeline", {
             pipelineName: "TaiGerPortalTranscriptAnalyzerPipeline",
+            crossRegionReplicationBuckets: {
+                "us-west-2": new Bucket(
+                    this,
+                    `${GITHUB_REPO}-ReplicationArtifactBucket-${Region.NRT}`,
+                    {
+                        bucketName: `${GITHUB_REPO}-pipeline-bucket-${Region.NRT}`.toLowerCase(),
+                        removalPolicy: RemovalPolicy.DESTROY,
+                        autoDeleteObjects: true,
+                        versioned: false,
+                        enforceSSL: true,
+                        encryption: BucketEncryption.S3_MANAGED,
+                        blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+                        lifecycleRules: [{ expiration: Duration.days(30) }]
+                    }
+                )
+            },
+            artifactBucket: new Bucket(this, `${GITHUB_REPO}-ArtifactBucket`, {
+                bucketName: `${GITHUB_REPO}-pipeline-artifact-bucket`.toLowerCase(),
+                removalPolicy: RemovalPolicy.DESTROY,
+                autoDeleteObjects: true,
+                versioned: false,
+                encryption: BucketEncryption.S3_MANAGED,
+                blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+                enforceSSL: true,
+                lifecycleRules: [
+                    {
+                        expiration: Duration.days(30)
+                    }
+                ]
+            }),
             synth: new ShellStep("Synth", {
                 input: source,
                 commands: ["npm ci", "npm run build", "npx cdk synth"]
