@@ -38,7 +38,21 @@ export class PipelineStack extends cdk.Stack {
         const pipeline = new CodePipeline(this, "Pipeline", {
             pipelineName: "TaiGerPortalTranscriptAnalyzerPipeline",
             crossRegionReplicationBuckets: {
-                "us-west-2": new Bucket(
+                [Region.IAD]: new Bucket(
+                    this,
+                    `${GITHUB_REPO}-ReplicationArtifactBucket-${Region.IAD}`,
+                    {
+                        bucketName: `${GITHUB_REPO}-pipeline-bucket-${Region.IAD}`.toLowerCase(),
+                        removalPolicy: RemovalPolicy.DESTROY,
+                        autoDeleteObjects: true,
+                        versioned: false,
+                        enforceSSL: true,
+                        encryption: BucketEncryption.S3_MANAGED,
+                        blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+                        lifecycleRules: [{ expiration: Duration.days(30) }]
+                    }
+                ),
+                [Region.NRT]: new Bucket(
                     this,
                     `${GITHUB_REPO}-ReplicationArtifactBucket-${Region.NRT}`,
                     {
@@ -53,20 +67,6 @@ export class PipelineStack extends cdk.Stack {
                     }
                 )
             },
-            artifactBucket: new Bucket(this, `${GITHUB_REPO}-ArtifactBucket`, {
-                bucketName: `${GITHUB_REPO}-pipeline-artifact-bucket`.toLowerCase(),
-                removalPolicy: RemovalPolicy.DESTROY,
-                autoDeleteObjects: true,
-                versioned: false,
-                encryption: BucketEncryption.S3_MANAGED,
-                blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-                enforceSSL: true,
-                lifecycleRules: [
-                    {
-                        expiration: Duration.days(30)
-                    }
-                ]
-            }),
             synth: new ShellStep("Synth", {
                 input: source,
                 commands: ["npm ci", "npm run build", "npx cdk synth"]
