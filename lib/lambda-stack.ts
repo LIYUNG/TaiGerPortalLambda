@@ -31,6 +31,8 @@ import { Certificate, CertificateValidation } from "aws-cdk-lib/aws-certificatem
 import { ApiGatewayDomain } from "aws-cdk-lib/aws-route53-targets";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Bucket } from "aws-cdk-lib/aws-s3";
+import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
+import { RemovalPolicy } from "aws-cdk-lib";
 
 interface LambdaStackProps extends cdk.StackProps {
     stageName: string;
@@ -86,6 +88,15 @@ export class LambdaStack extends cdk.Stack {
                     REGION: props.env.region,
                     AWS_S3_BUCKET_NAME: bucket.bucketName // Pass the bucket name to the Lambda
                 },
+                logGroup: new LogGroup(
+                    this,
+                    `${TENANT_NAME}-TranscriptAnalyzer-Function-${props.stageName}-LogGroup`,
+                    {
+                        logGroupName: `/aws/lambda/TranscriptAnalyzer-${props.stageName}-${props.env.region}`,
+                        retention: RetentionDays.SIX_MONTHS,
+                        removalPolicy: RemovalPolicy.DESTROY
+                    }
+                ),
                 snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS
             }
         );
