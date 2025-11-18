@@ -335,8 +335,7 @@ def WriteToExcel(json_output,
                  transcript_sorted_group_map,
                  df_transcript_array_temp,
                  df_category_courses_sugesstion_data_temp,
-                 program, factor, requirement_id):
-    print('requirement_id: ', requirement_id)
+                 program, factor):
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -363,7 +362,7 @@ def WriteToExcel(json_output,
     json_output[program_name_long] = {
         'sorted': {}, 'suggestion': {}, 'scores': {}, 'fpso': "", 'admissionDescription': ""}
 
-    requirement_id = program.get('_id', "")
+    requirement_id = str(program.get('_id', "")) if program.get('_id') else ""
     fpso = program.get('fpso', "")
     admissionDescription = program.get('admissionDescription', "")
     gpaScoreBoundaryGPA = program.get('gpaScoreBoundaryGPA', 0)
@@ -620,7 +619,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     #####################################################################
 
     WriteToExcel(json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
-                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor, requirement_id)
+                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor)
 
 
 def custom_json_serializer(obj):
