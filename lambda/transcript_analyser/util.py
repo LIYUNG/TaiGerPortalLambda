@@ -327,7 +327,16 @@ def AppendCreditsCount(df_PROG_SPEC_CATES, program_category, factor):
 # TODO: debug baseCategoryToProgramMapping, it keywordSets become object
 
 
-def WriteToExcel(json_output, program_name, program_name_long, program_category, baseCategoryToProgramMapping, transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor):
+def WriteToExcel(json_output,
+                 program_name,
+                 program_name_long,
+                 program_category,
+                 baseCategoryToProgramMapping,
+                 transcript_sorted_group_map,
+                 df_transcript_array_temp,
+                 df_category_courses_sugesstion_data_temp,
+                 program, factor, requirement_id):
+    print('requirement_id: ', requirement_id)
     df_PROG_SPEC_CATES, df_PROG_SPEC_CATES_COURSES_SUGGESTION = ProgramCategoryInit(
         program_category)
     transcript_sorted_group_list = list(transcript_sorted_group_map)
@@ -354,6 +363,7 @@ def WriteToExcel(json_output, program_name, program_name_long, program_category,
     json_output[program_name_long] = {
         'sorted': {}, 'suggestion': {}, 'scores': {}, 'fpso': "", 'admissionDescription': ""}
 
+    requirement_id = program.get('_id', "")
     fpso = program.get('fpso', "")
     admissionDescription = program.get('admissionDescription', "")
     gpaScoreBoundaryGPA = program.get('gpaScoreBoundaryGPA', 0)
@@ -377,6 +387,7 @@ def WriteToExcel(json_output, program_name, program_name_long, program_category,
     directAdmissionSecondScore = program.get('directAdmissionSecondScore', 0)
 
     json_output[program_name_long]['fpso'] = fpso
+    json_output[program_name_long]['requirementId'] = requirement_id
     json_output[program_name_long]['admissionDescription'] = admissionDescription
     json_output[program_name_long]['scores'] = {
         'gpaScoreBoundaryGPA': gpaScoreBoundaryGPA,
@@ -609,7 +620,7 @@ def createSheet(transcript_sorted_group_map, df_transcript_array, df_category_co
     #####################################################################
 
     WriteToExcel(json_output, program_name, program_name_long, program_categories, baseCategoryToProgramMapping,
-                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor)
+                 transcript_sorted_group_map, df_transcript_array_temp, df_category_courses_sugesstion_data_temp, program, factor, requirement_id)
 
 
 def custom_json_serializer(obj):

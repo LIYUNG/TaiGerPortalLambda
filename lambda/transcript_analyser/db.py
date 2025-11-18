@@ -127,7 +127,6 @@ def get_keywords_collection():
 def get_programs_analysis_collection(requirement_ids_arr):
 
     # Example: Fetch all documents from the collection
-    # documents = programs_mock
     documents = get_requirements_collection(requirement_ids_arr)
     print('requiremnts: ', documents)
     return documents
