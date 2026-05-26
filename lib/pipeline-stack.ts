@@ -19,6 +19,7 @@ import { PipelineAppStage } from "./app-stage";
 import { Region, STAGES } from "../constants";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { BlockPublicAccess, Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
+import { PipelineType } from "aws-cdk-lib/aws-codepipeline";
 
 export class PipelineStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,6 +38,7 @@ export class PipelineStack extends cdk.Stack {
         // Create the high-level CodePipeline
         const pipeline = new CodePipeline(this, "Pipeline", {
             pipelineName: "TaiGerPortalTranscriptAnalyzerPipeline",
+            pipelineType: PipelineType.V2,
             artifactBucket: new Bucket(this, `${GITHUB_REPO}-ArtifactBucket`, {
                 bucketName: `${GITHUB_REPO}-pipeline-artifact-bucket`.toLowerCase(),
                 removalPolicy: RemovalPolicy.DESTROY,
